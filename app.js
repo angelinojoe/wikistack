@@ -3,7 +3,6 @@ const express = require( 'express' );
 const app = express(); // creates an instance of an express application
 const nunjucks = require('nunjucks');
 var wikiRouter = require('./routes/wiki');
-//const routes = require('./routes');
 const bodyParser = require('body-parser');
 var models = require('./models');
 
@@ -20,9 +19,19 @@ app.engine('html', nunjucks.render);
 app.use(morgan('dev') );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use('/', routes);
-app.use('/wiki', wikiRouter);
 app.use(express.static('public'));
+//always send the oute after all other middleware or else they will never get visited
+app.use('/wiki', wikiRouter);
+
+app.get('/', function(req,res){
+    res.render('index');
+});
+
+//Error handling middleware: MUST pass in err, req, res, next IN THAT ORDER
+app.use(function(err,req,res,next){
+   console.error(err);
+   res.status(500).send(err.message);
+});
 
 //WHY THE EMPTY OBJECT??
 //since sync is async and returns a promise, when first model is synced,

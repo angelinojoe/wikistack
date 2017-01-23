@@ -26,23 +26,16 @@ var Page = db.define('page', {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
     }
+    //define also takes an object of options, where you can add your extra methods, hooks, etc
 }, { getterMethods: {
+        //a virtual, not saved in the db bc it is derived from another field (title in this case)
         route: function() {
             return '/wiki/' + this.urlTitle;
-        },
-        //getter to return obj of values
-        get: function(){
-            return {
-                title: this.title,
-                urlTitle: this.urlTitle,
-                content: this.content,
-                status: this.status,
-                date: this.date
-            };
         }
-  }
+    }
 });
 
+//another way to attach a hook to a schema (takes an instance as a parameter)
 Page.beforeValidate(function (page) {
   if (page.title) {
     // Removes all non-alphanumeric characters from title
@@ -63,19 +56,15 @@ var User = db.define('user', {
   email: {
       type: Sequelize.STRING,
       allowNull: false,
-      isEmail: true
+      validate: {
+          isEmail: true
+      },
+      unique: true
   }
-}, {getterMethods: {
-    get: function(){
-            return {
-                name: this.name,
-                email: this.email,
-            };
-        }
-    }
 });
 
 //set up an association between users and page
+
 Page.belongsTo(User, { as: 'author' });
 
 module.exports = {
