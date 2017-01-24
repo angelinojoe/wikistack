@@ -18,26 +18,33 @@ router.get('/add', function (req, res) {
   res.render('addpage');
 });
 
+router.get('/search', function (req, res){
+    res.render('tagSearch');
+});
+
 router.get('/:urlReq', function (req, res, next) {
   //SEQUELIZE METHOD TO FIND 1 ROW (ASYNC, so have return method in .then)
   Page.findOne({
-  where: {
-    urlTitle: req.params.urlReq
-  }
-  }).then(function(currentPage){
-      //comes from belongsTo association
-      currentPage.getAuthor()
-      //add author to the currentPage object that you send to the wikipage so you can dynamically add author to template
-      .then(function(author){
-          //author is the whole author object, need to get just name
-          currentPage.author = author.name;
-          res.render('wikipage', {currentPage: currentPage});
-      });
-    })
-    //if urlTitle doesnt exist we will handle the error
-    .catch(function(err){
-    next(err);
-    });
+            where: {
+                urlTitle: req.params.urlReq
+            },
+            //attaches author to object
+            include: [
+                {model: User, as: 'author'}
+            ]
+        })
+        //object is passed here now called currentPage
+        .then(function (currentPage) {
+            if (currentPage === null) {
+                res.status(404).send();
+            } else {
+                res.render('wikipage', {
+                    currentPage: currentPage
+                });
+
+            }
+        })
+        .catch(next);
 });
 
 router.post('/', function (req, res, next) {
@@ -57,6 +64,7 @@ router.post('/', function (req, res, next) {
     title: req.body.title,
     content: req.body.content,
     status: req.body.status,
+    tags: req.body.tags
   })
   .then(function(createdPage){
     //a method from the belongsTo, sets authorId of pages to id of User who wrote it

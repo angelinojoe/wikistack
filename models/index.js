@@ -25,6 +25,24 @@ var Page = db.define('page', {
     date: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
+    },
+     tags: {
+        //How to et a data value to an array
+        type: Sequelize.ARRAY(Sequelize.STRING),
+        defaultValue: [],
+        set: function (tags) {
+
+            tags = tags || [];
+
+            if (typeof tags === 'string') {
+                tags = tags.split(',').map(function (str) {
+                    return str.trim();
+                });
+            }
+
+            this.setDataValue('tags', tags);
+
+        }
     }
     //define also takes an object of options, where you can add your extra methods, hooks, etc
 }, { getterMethods: {

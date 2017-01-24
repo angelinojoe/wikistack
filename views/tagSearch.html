@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h3>Find Pages By Tags</h3>
+  <hr>
+  <form method="GET" action="/wiki/search">
+
+       <label for="tags" class="col-sm-2 control-label">Tags</label>
+      <div class="col-sm-10">
+        <input name="tag" type="text" class="form-control" value= '#' />
+      </div>
+    </div>
+
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+
+  </form>
+{% endblock %}

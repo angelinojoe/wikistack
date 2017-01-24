@@ -3,6 +3,7 @@ const express = require( 'express' );
 const app = express(); // creates an instance of an express application
 const nunjucks = require('nunjucks');
 var wikiRouter = require('./routes/wiki');
+var userRouter = require('./routes/users');
 const bodyParser = require('body-parser');
 var models = require('./models');
 
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 //always send the oute after all other middleware or else they will never get visited
 app.use('/wiki', wikiRouter);
+app.use('/users', userRouter);
 
 app.get('/', function(req,res){
     res.render('index');
@@ -33,7 +35,6 @@ app.use(function(err,req,res,next){
    res.status(500).send(err.message);
 });
 
-//WHY THE EMPTY OBJECT??
 //since sync is async and returns a promise, when first model is synced,
 //start syncing 2nd table, then start the server. Need our tables defined ]\
 //befire we take server requests
